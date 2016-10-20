@@ -31,7 +31,8 @@
                 android:id="@+id/CalculatedTime"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
-                android:layout_weight="0.37" />
+                android:layout_weight="0.37"
+                android:gravity="center_vertical|center_horizontal" />
 
             <Button
                 android:text="Button"
@@ -64,6 +65,14 @@
                 android:ems="10"
                 android:id="@+id/TheEndingOfTheDay"
                 android:hint="The Ending Of The Day" />
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="date"
+                android:ems="10"
+                android:id="@+id/TodaysDate"
+                android:hint="Date" />
 
             <Button
                 android:text="Button"
