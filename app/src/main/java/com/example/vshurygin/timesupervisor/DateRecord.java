@@ -8,13 +8,14 @@ import io.realm.RealmObject;
 
 public class DateRecord extends RealmObject
 {
-    private String mTheBeginingOfDayTime;
+    private String mTheBeginningOfDayTime;
     private String mTheEndingOfDayTime;
     private String mDate;
+    private int mWeekNumber;
 
-    public void setBeginingOfDayTime(String _value)
+    public void setBeginningOfDayTime(String _value)
     {
-        mTheBeginingOfDayTime = _value;
+        mTheBeginningOfDayTime = _value;
     }
     public void setEndingOfTheDayTime(String _value)
     {
@@ -24,10 +25,14 @@ public class DateRecord extends RealmObject
     {
         mDate = _value;
     }
-
-    public String getBeginingOfDayTime()
+    public void setWeekNumber(int _value)
     {
-        return mTheBeginingOfDayTime;
+        mWeekNumber = _value;
+    }
+
+    public String getBeginningOfDayTime()
+    {
+        return mTheBeginningOfDayTime;
     }
     public String getEndingOfDayTime()
     {
@@ -36,5 +41,9 @@ public class DateRecord extends RealmObject
     public String getDate()
     {
         return mDate;
+    }
+    public int getWeekNumber()
+    {
+        return mWeekNumber;
     }
 }

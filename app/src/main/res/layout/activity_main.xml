@@ -54,8 +54,8 @@
                 android:layout_height="wrap_content"
                 android:inputType="time"
                 android:ems="10"
-                android:id="@+id/TheBeginingOfTheDay"
-                android:hint="The Begining Of The Day" />
+                android:id="@+id/TheBeginningOfTheDay"
+                android:hint="@string/TheBeginningOfTheDay" />
 
             <EditText
                 android:layout_width="match_parent"
@@ -63,7 +63,7 @@
                 android:inputType="time"
                 android:ems="10"
                 android:id="@+id/TheEndingOfTheDay"
-                android:hint="The Ending Of The Day" />
+                android:hint="@string/TheEndingOfTheDay" />
 
             <EditText
                 android:layout_width="match_parent"
@@ -71,13 +71,36 @@
                 android:inputType="date"
                 android:ems="10"
                 android:id="@+id/TodaysDate"
-                android:hint="Date" />
+                android:hint="@string/Date" />
 
-            <Button
-                android:text="Add Record"
+            <EditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/TheButtonOfCalculateTime" />
+                android:inputType="numberSigned"
+                android:ems="10"
+                android:id="@+id/WeekNumber"
+                android:hint="@string/WeekNumber"/>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <Button
+                    android:text="Add Record"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/AddRecordButton"
+                    android:layout_weight="0.78" />
+
+                <Button
+                    android:text="Calculate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/CalculateOfTimeButton"
+                    android:layout_weight="1" />
+
+            </LinearLayout>
 
         </LinearLayout>
 
