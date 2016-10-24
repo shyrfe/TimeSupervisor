@@ -124,8 +124,8 @@ public class MainActivity extends AppCompatActivity {
     private int calculateHoursForWeek(int _week)
     {
         int TotalHours = 0;
-
         int TotalMinute = 0;
+
         int TotalTime;
 
         for (DateRecord record : realm.where(DateRecord.class).findAll())
@@ -152,90 +152,97 @@ public class MainActivity extends AppCompatActivity {
                     int Thours = Ehour - Bhour;
                     int Tminute = Eminute - Bminute;
 
-                    if (Tminute < 0)
-                    {
+
+                    if (Tminute < 0) {
                         Thours--;
                         Tminute = Math.abs(60 + Tminute);
                     }
                     Log.d("TH",String.valueOf(Thours) + " TM: "+ String.valueOf(Tminute));
 
-                    if (Thours >= MINIMUM_WORK_TIME)
-                    {
-                        TotalHours += Thours - MINIMUM_WORK_TIME;
 
-                        if(TotalMinute + Tminute >= 60)
-                        {
-                            TotalHours++;
-                            TotalMinute = Math.abs(60 - (TotalMinute + Tminute));
-                        }
-                        else
-                        {
-                            TotalHours += Tminute;
-                        }
+                    int WorkHour = Thours-6;
+                    int WorkMinute = Tminute;
+
+                    if((WorkHour < 0) && (WorkMinute != 0)) {
+                        WorkMinute = 60 - WorkMinute;
+                        WorkHour++;
                     }
-                    else
-                    {
 
-
-                        if (Tminute > 0)
-                        {
-                            TotalHours -= (MINIMUM_WORK_TIME - (Thours+1));
-                            if (TotalMinute - (60 - Tminute) < 0)
-                            {
-                                //TotalHours -= 1;
-                                TotalMinute = 60 - Math.abs(TotalMinute - (60 - Tminute));
+                    if (WorkHour >= 0) {
+                        if(TotalHours >= 0) {
+                            if(TotalMinute + WorkMinute >= 60){
+                                TotalHours = TotalHours + (WorkHour+1);
+                                TotalMinute = (TotalMinute + WorkMinute) - 60;
                             }
-                            else
-                            {
-                                TotalMinute -= (60 - Tminute);
+                            else {
+                                TotalHours = TotalHours + WorkHour;
+                                TotalMinute = TotalMinute + WorkMinute;
                             }
-
                         }
-                        else
-                        {
-                            TotalHours -= (MINIMUM_WORK_TIME - Thours);
+                        else{
+
+                            if ((Math.abs(TotalHours) < WorkHour)) {
+                                if((TotalMinute < WorkMinute))
+                                {
+                                    TotalHours = TotalHours + WorkHour;
+                                    TotalMinute = WorkMinute - TotalMinute;
+                                }
+                                else{
+                                    WorkHour--;
+                                    TotalHours = TotalHours + WorkHour;
+                                    TotalMinute = (60 + WorkMinute) - TotalMinute;
+                                }
+                            }
+                            else{
+                                if((TotalMinute > WorkMinute))
+                                {
+                                    TotalHours = TotalHours + WorkHour;
+                                    TotalMinute = TotalMinute - WorkMinute;
+                                }
+                                else{
+                                    WorkHour++;
+                                    TotalHours = TotalHours + WorkHour;
+                                    TotalMinute = (60 + TotalMinute) - WorkMinute;
+                                }
+                            }
+                            /*if(TotalMinute - WorkMinute >= 0){
+                                //TotalHours = TotalHours + (WorkHour + 1);
+                                TotalHours = TotalHours + WorkHour;
+                                //TotalHours--;
+                                TotalMinute = TotalMinute - WorkMinute;
+                            }
+                            else{
+                                //TotalHours = TotalHours + WorkHour;
+                                TotalHours = TotalHours + (WorkHour + 1);
+                                TotalMinute = 60 + (TotalMinute - WorkMinute);
+                            }*/
                         }
                     }
-                   /* if(Thours >= MINIMUM_WORK_TIME)
-                    {
-                        TotalHours += Thours - MINIMUM_WORK_TIME;
-
-                        if ((TotalMinute + Tminute) >= 60)
-                        {
-                            TotalHours++;
-                            TotalMinute = Math.abs(60 - (TotalMinute + Tminute));
+                    else {
+                        if(TotalHours >= 0){
+                            if(TotalMinute - WorkMinute >= 0){
+                                TotalHours = TotalHours - Math.abs(WorkHour);
+                                TotalMinute = TotalMinute - WorkMinute;
+                            }
+                            else {
+                                TotalHours = TotalHours - (Math.abs(WorkHour) + 1);
+                                TotalMinute = 60 + (TotalMinute - WorkMinute);
+                            }
                         }
-                        else
-                        {
-                            TotalMinute += Tminute;
+                        else{
+                            if(TotalMinute + WorkMinute >= 60){
+                                TotalHours = TotalHours - (Math.abs(WorkHour) + 1);
+                                TotalMinute = 60 - (TotalMinute + WorkMinute);
+                            }
+                            else{
+                                TotalHours = TotalHours - Math.abs(WorkHour);
+                                TotalMinute = TotalMinute + WorkMinute;
+                            }
                         }
                     }
-                    else
-                    {
-                        TotalHours -= Math.abs(Thours - MINIMUM_WORK_TIME);
 
-                        if((TotalMinute - Tminute) < 0)//-50
-                        {
-                            TotalHours++;
-                            TotalMinute = 60 - Math.abs(TotalMinute - Tminute);
-                        }
-                        else
-                        {
-                            TotalMinute -= Tminute;
-                        }
 
-                    }*/
                     Log.d("H",String.valueOf(TotalHours) + " M: "+ String.valueOf(TotalMinute));
-                    /*TotalHours += Thours;
-                    if ((TotalMinute + Tminute) >= 60)
-                    {
-                        TotalHours++;
-                        TotalMinute = Math.abs(60 - (TotalMinute + Tminute));
-                    }
-                    else
-                    {
-                        TotalMinute += Tminute;
-                    }*/
                 }
                 catch (Exception e)
                 {
@@ -243,6 +250,10 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }
+
+        /*TotalHours += TotalMinute / 60;
+        TotalMinute = TotalMinute - ((TotalMinute/60)*60);*/
+
         if (TotalHours > 0)
         {
             TotalTime = (Math.abs(TotalHours)*100+Math.abs(TotalMinute));
