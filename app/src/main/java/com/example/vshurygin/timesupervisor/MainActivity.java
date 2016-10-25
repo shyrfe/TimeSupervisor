@@ -168,8 +168,8 @@ public class MainActivity extends AppCompatActivity {
                         WorkHour++;
                     }
 
-                    if (WorkHour >= 0) {
-                        if(TotalHours >= 0) {
+                    if (WorkHour >= 0){
+                        if(TotalHours >= 0){
                             if(TotalMinute + WorkMinute >= 60){
                                 TotalHours = TotalHours + (WorkHour+1);
                                 TotalMinute = (TotalMinute + WorkMinute) - 60;
@@ -180,10 +180,8 @@ public class MainActivity extends AppCompatActivity {
                             }
                         }
                         else{
-
-                            if ((Math.abs(TotalHours) < WorkHour)) {
-                                if((TotalMinute < WorkMinute))
-                                {
+                            if((Math.abs(TotalHours) < WorkHour)) {
+                                if((TotalMinute < WorkMinute)) {
                                     TotalHours = TotalHours + WorkHour;
                                     TotalMinute = WorkMinute - TotalMinute;
                                 }
@@ -194,8 +192,7 @@ public class MainActivity extends AppCompatActivity {
                                 }
                             }
                             else{
-                                if((TotalMinute > WorkMinute))
-                                {
+                                if((TotalMinute >= WorkMinute)) {
                                     TotalHours = TotalHours + WorkHour;
                                     TotalMinute = TotalMinute - WorkMinute;
                                 }
@@ -240,8 +237,6 @@ public class MainActivity extends AppCompatActivity {
                             }
                         }
                     }
-
-
                     Log.d("H",String.valueOf(TotalHours) + " M: "+ String.valueOf(TotalMinute));
                 }
                 catch (Exception e)
