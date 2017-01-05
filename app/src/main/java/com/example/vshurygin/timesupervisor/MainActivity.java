@@ -3,16 +3,22 @@ package com.example.vshurygin.timesupervisor;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.content.Context;
 import android.widget.Toast;
 
 import java.sql.Time;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -24,6 +30,7 @@ import javax.xml.validation.Validator;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
+import io.realm.RealmResults;
 import io.realm.Sort;
 
 public class MainActivity extends AppCompatActivity {
@@ -39,11 +46,11 @@ public class MainActivity extends AppCompatActivity {
     private EditText mTodaysDateEditText;
     private EditText mWeekNumberEditText;
     private TextView mCalculatedTimeTextView;
+    private ListView mRecordsList;
     private Realm realm;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mLocalContext = this;
@@ -67,18 +74,34 @@ public class MainActivity extends AppCompatActivity {
         mTodaysDateEditText = (EditText)findViewById(R.id.TodaysDate);
         mWeekNumberEditText = (EditText)findViewById(R.id.WeekNumber);
         mCalculatedTimeTextView = (TextView)findViewById(R.id.CalculatedTime);
+
+        RealmResults<DateRecord> results = realm.where(DateRecord.class).findAll();
+        ArrayList<DateRecord> allRecords = new ArrayList<>();
+        for (DateRecord item:results) {
+            allRecords.add(item);
+        }
+
+        mRecordsList = (ListView)findViewById(R.id.RecordsList);
+        String[] testResult = {"Android","iOS","WindowsPhone"};
+        ResultListAdapter adapter = new ResultListAdapter(this,allRecords);
+        mRecordsList.setAdapter(adapter);
+
     }
 
     @Override
     protected void onDestroy()
     {
-        realm.close();
+        try{
+            super.onDestroy();
+            realm.close();
+        }catch(Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
-    private void addRecord(final String _theBeginningOfTheDay, final String _theEndingOfTheDay, final String _date, final int _weeknumber)
-    {
-        try
-        {
+    private void addRecord(final String _theBeginningOfTheDay, final String _theEndingOfTheDay, final String _date, final int _weeknumber) {
+        try {
             realm.executeTransaction(new Realm.Transaction()
             {
                 @Override
@@ -93,15 +116,13 @@ public class MainActivity extends AppCompatActivity {
             });
             Log.d("addRecords","Records Added");
         }
-        catch (Exception e)
-        {
+        catch (Exception e) {
             e.printStackTrace();
             Log.d("addRecords","Records are not Added");
         }
     }
 
-    private void deleteAllRecords()
-    {
+    private void deleteAllRecords() {
         realm.executeTransaction(new Realm.Transaction()
         {
             @Override
@@ -121,19 +142,15 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private int calculateHoursForWeek(int _week)
-    {
+    private int calculateHoursForWeek(int _week) {
         int TotalHours = 0;
         int TotalMinute = 0;
 
         int TotalTime;
 
-        for (DateRecord record : realm.where(DateRecord.class).findAll())
-        {
-            if (record.getWeekNumber() == _week)
-            {
+        for (DateRecord record : realm.where(DateRecord.class).findAll()) {
+            if (record.getWeekNumber() == _week) {
                 SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-
                 try {
                     Date Bdate = sdf.parse(record.getBeginningOfDayTime());
                     Calendar Bcalendar = GregorianCalendar.getInstance();
@@ -239,8 +256,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                     Log.d("H",String.valueOf(TotalHours) + " M: "+ String.valueOf(TotalMinute));
                 }
-                catch (Exception e)
-                {
+                catch (Exception e) {
                     e.printStackTrace();
                 }
             }
@@ -249,36 +265,30 @@ public class MainActivity extends AppCompatActivity {
         /*TotalHours += TotalMinute / 60;
         TotalMinute = TotalMinute - ((TotalMinute/60)*60);*/
 
-        if (TotalHours > 0)
-        {
+        if (TotalHours > 0) {
             TotalTime = (Math.abs(TotalHours)*100+Math.abs(TotalMinute));
         }
-        else
-        {
+        else {
             TotalTime = (Math.abs(TotalHours)*100+Math.abs(TotalMinute)) * -1;
         }
 
         return TotalTime;
     }
 
-    class AddRecordButtomClickListener implements View.OnClickListener
-    {
-        private boolean checkTime(String _value)
-        {
+    class AddRecordButtomClickListener implements View.OnClickListener {
+        private boolean checkTime(String _value) {
             Pattern p = Pattern.compile("^(([0,1][0-9])|(2[0-3])):[0-5][0-9]$");
             Matcher m = p.matcher(_value);
             return m.matches();
         }
-        private boolean checkDate(String _value)
-        {
+        private boolean checkDate(String _value) {
             Pattern p = Pattern.compile("(0[1-9]|1[0-9]|2[0-9]|3[01])-(0[1-9]|1[012])-[0-9]{4}");
             Matcher m = p.matcher(_value);
             return m.matches();
         }
 
         @Override
-        public void onClick(View v)
-        {
+        public void onClick(View v) {
             String beginningOfTheDay = mTheBeginningOfTheDayEditText.getText().toString();
             String endingOfTheDay = mTheEndingOfTheDayEditText.getText().toString();
             String date = mTodaysDateEditText.getText().toString();
@@ -286,13 +296,11 @@ public class MainActivity extends AppCompatActivity {
             String sWeekNumber = mWeekNumberEditText.getText().toString();
             int weeknumber;
 
-            if((checkDate(date))&&(checkTime(beginningOfTheDay))&&(checkTime(endingOfTheDay))&&(sWeekNumber != ""))
-            {
+            if((checkDate(date))&&(checkTime(beginningOfTheDay))&&(checkTime(endingOfTheDay))&&(sWeekNumber != "")) {
                 weeknumber = Integer.parseInt(sWeekNumber);
                 addRecord(beginningOfTheDay,endingOfTheDay,date,weeknumber);
             }
-            else
-            {
+            else {
                 Log.d("Validate",String.valueOf(checkDate(date)));
                 Log.d("Validate",String.valueOf(checkTime(beginningOfTheDay)));
                 Log.d("Validate",String.valueOf(checkTime(endingOfTheDay)));
@@ -308,21 +316,17 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    class ClearAllRecordsButtonClickListener implements View.OnClickListener
-    {
+    class ClearAllRecordsButtonClickListener implements View.OnClickListener {
         @Override
         public void onClick(View v)
         {
             deleteAllRecords();
         }
     }
-    class CalculateOfTimeButtonListener implements  View.OnClickListener
-    {
+    class CalculateOfTimeButtonListener implements  View.OnClickListener {
         @Override
-        public void onClick(View v)
-        {
-            if(!mWeekNumberEditText.getText().toString().equals(""))
-            {
+        public void onClick(View v) {
+            if(!mWeekNumberEditText.getText().toString().equals("")) {
                 String sWeekNumber = mWeekNumberEditText.getText().toString();
                 int weeknumber = Integer.parseInt(sWeekNumber);
 
@@ -330,18 +334,58 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("Hours",String.valueOf(totalHours));
                 int hours = totalHours / 100;
                 int minute = totalHours % 100;
-                if(minute < 0)
-                {
+                if(minute < 0) {
                     minute *= -1;
                 }
 
 
                 mCalculatedTimeTextView.setText(String.valueOf(hours)+":"+String.valueOf(minute));
             }
-            else
-            {
+            else {
                 Toast.makeText(mLocalContext,R.string.EmptyWeek,Toast.LENGTH_SHORT).show();
             }
+        }
+    }
+    class ResultListAdapter extends BaseAdapter{
+        private Context mContext;
+        private LayoutInflater mLayoutInflater;
+        private ArrayList<DateRecord> mRecords;
+
+        ResultListAdapter(Context _context, ArrayList<DateRecord> _records){
+            mContext = _context;
+            mLayoutInflater = (LayoutInflater)mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            mRecords = _records;
+        }
+
+        @Override
+        public int getCount(){
+            return mRecords.size();
+        }
+
+        @Override
+        public DateRecord getItem(int _position){
+            return mRecords.get(_position);
+        }
+
+        @Override
+        public long getItemId(int _position){
+            return _position;
+        }
+
+        @Override
+        public View getView(int _position, View _convertView, ViewGroup _parent){
+            View view = _convertView;
+            if(view == null){
+                view = mLayoutInflater.inflate(R.layout.activity_listview,_parent,false);
+            }
+            DateRecord record = getItem(_position);
+
+            ((TextView)view.findViewById(R.id.listItemWeekNumber)).setText(String.valueOf(record.getWeekNumber()));
+            ((TextView)view.findViewById(R.id.listItemBeginningOfDayTime)).setText(record.getBeginningOfDayTime());
+            ((TextView)view.findViewById(R.id.listItemEndingOfDayTime)).setText(record.getEndingOfDayTime());
+            ((TextView)view.findViewById(R.id.listItemDate)).setText(record.getDate());
+
+            return view;
         }
     }
 }

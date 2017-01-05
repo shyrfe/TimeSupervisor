@@ -45,7 +45,7 @@
             android:id="@+id/InputLayout"
             android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:weightSum="1"
             android:layout_below="@+id/HeadLayout">
 
@@ -84,7 +84,7 @@
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="wrap_content">
 
                 <Button
                     android:text="Add Record"
@@ -103,6 +103,11 @@
             </LinearLayout>
 
         </LinearLayout>
+
+        <ListView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/RecordsList" />
 
     </LinearLayout>
 
